@@ -1,8 +1,11 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IndizTube v4.1</title>
   <link rel="manifest" href="/manifest.json" />
+  <meta name="google-site-verification" content="Y_8wf8-asuxtmcqZIofrY7W06hS7zWLW3Xe0g8ffTvk" />
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js');
@@ -63,170 +66,172 @@
     <input placeholder="Withdraw Amount"><br>
     <button onclick="alert('Your money is on the way')">Submit</button>
   </div>
+
   <script>
     let coins = 0;
     let home = document.getElementById("home");
     const binId = "64a9d6eaeed14f59a629b607";
     const jsonbinKey = "$2b$10$k3PrrfkeD8zRYW8KlgIQJO4Fqj6xKJutDR9rHThUX4vq7cTzrnY2u";
     const cloudName = "dtlbk3ncz";
-    const uploadPreset = "inditube";function show(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
+    const uploadPreset = "inditube";
 
-function updateWallet() {
-  document.getElementById("wallet").innerText = (Math.random()<0.5 ? "💰" : "₹") + " " + coins.toFixed(2);
-}
+    function show(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
 
-function addCard({title, url, channel, img}) {
-  let badge = `<span class='badge'>💎</span>`;
-  let isYT = url.includes("youtube");
-  let videoEl = isYT ? `<iframe src='${url}' allowfullscreen></iframe>` : `<video src='${url}' controls></video>`;
-  let card = `<div class='video-card'>
-    <div class='channel-info'><img src='${img}'><b>${channel}</b> ${badge}</div>
-    ${videoEl}
-    <div><b>${title}</b></div>
-    <div class='btn-row'>
-      <button class='like' onclick='count(this,"👍 Like")'>👍 Like (0)</button>
-      <button class='dislike' onclick='count(this,"👎 Dislike")'>👎 Dislike (0)</button>
-      <button class='share' onclick='share("${url}")'>📤 Share</button>
-      <button class='connect' onclick='connect(this)'>Connect (0)</button>
-    </div>
-  </div>`;
-  home.innerHTML = card + home.innerHTML;
-}
+    function updateWallet() {
+      document.getElementById("wallet").innerText = (Math.random()<0.5 ? "💰" : "₹") + " " + coins.toFixed(2);
+    }
 
-function count(btn, label) {
-  let c = parseInt(btn.innerText.match(/(\d+)/)?.[1]||"0") + 1;
-  btn.innerText = `${label} (${c})`;
-}
-
-function connect(btn) {
-  if (btn.classList.contains("connected")) return;
-  btn.classList.add("connected");
-  count(btn,"Connect");
-}
-
-function share(url) {
-  navigator.clipboard.writeText(url);
-  alert("Link Copied: "+url);
-}
-
-function searchYT(btn) {
-  btn.style.background = "purple";
-  let q = document.getElementById("searchBox").value.trim();
-  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=4&q=${q}&key=AIzaSyC8deh4aDWekkvuegD5g6mNhFUrbRNVUTU`)
-  .then(res=>res.json())
-  .then(json=>{
-    document.getElementById("searchResults").innerHTML = json.items.map(v=>{
-      let vid = v.id.videoId;
-      let title = v.snippet.title;
-      let channel = v.snippet.channelTitle;
-      let img = v.snippet.thumbnails.default.url;
-      let url = `https://www.youtube.com/embed/${vid}`;
-      return `<div class='video-card'>
+    function addCard({title, url, channel, img}) {
+      let badge = `<span class='badge'>💎</span>`;
+      let isYT = url.includes("youtube");
+      let videoEl = isYT ? `<iframe src='${url}' allowfullscreen></iframe>` : `<video src='${url}' controls></video>`;
+      let card = `<div class='video-card'>
+        <div class='channel-info'><img src='${img}'><b>${channel}</b> ${badge}</div>
+        ${videoEl}
         <div><b>${title}</b></div>
-        <iframe src='${url}' allowfullscreen></iframe>
-        <button onclick='addToHome(this,"${title}","${url}","${channel}","${img}")' style='background:yellow;border-radius:20px;padding:6px 12px;'>Add to IndizHome</button>
+        <div class='btn-row'>
+          <button class='like' onclick='count(this,"👍 Like")'>👍 Like (0)</button>
+          <button class='dislike' onclick='count(this,"👎 Dislike")'>👎 Dislike (0)</button>
+          <button class='share' onclick='share("${url}")'>📤 Share</button>
+          <button class='connect' onclick='connect(this)'>Connect (0)</button>
+        </div>
       </div>`;
-    }).join('');
-  });
-}
+      home.innerHTML = card + home.innerHTML;
+    }
 
-function addToHome(btn, title, url, channel, img) {
-  btn.style.background = "purple";
-  let video = {title, url, channel, img};
-  fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-    method: "GET",
-    headers: { 'X-Master-Key': jsonbinKey }
-  })
-  .then(r=>r.json())
-  .then(json => {
-    let data = json.record || [];
-    data.unshift(video);
-    fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-      method: "PUT",
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': jsonbinKey
-      },
-      body: JSON.stringify(data)
-    });
-    addCard(video);
-    coins += 3.5;
-    updateWallet();
-  });
-}
+    function count(btn, label) {
+      let c = parseInt(btn.innerText.match(/(\d+)/)?.[1]||"0") + 1;
+      btn.innerText = `${label} (${c})`;
+    }
 
-function manualUpload(btn) {
-  btn.innerText = "Uploading...";
-  let file = document.getElementById("uploadFile").files[0];
-  let photo = document.getElementById("uploadPhoto").files[0];
-  let title = document.getElementById("uploadTitle").value;
-  let channel = document.getElementById("uploadChannel").value;
+    function connect(btn) {
+      if (btn.classList.contains("connected")) return;
+      btn.classList.add("connected");
+      count(btn,"Connect");
+    }
 
-  const form = new FormData();
-  form.append("file", file);
-  form.append("upload_preset", uploadPreset);
+    function share(url) {
+      navigator.clipboard.writeText(url);
+      alert("Link Copied: "+url);
+    }
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    const imgData = reader.result;
+    function searchYT(btn) {
+      btn.style.background = "purple";
+      let q = document.getElementById("searchBox").value.trim();
+      fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=4&q=${q}&key=AIzaSyC8deh4aDWekkvuegD5g6mNhFUrbRNVUTU`)
+      .then(res=>res.json())
+      .then(json=>{
+        document.getElementById("searchResults").innerHTML = json.items.map(v=>{
+          let vid = v.id.videoId;
+          let title = v.snippet.title;
+          let channel = v.snippet.channelTitle;
+          let img = v.snippet.thumbnails.default.url;
+          let url = `https://www.youtube.com/embed/${vid}`;
+          return `<div class='video-card'>
+            <div><b>${title}</b></div>
+            <iframe src='${url}' allowfullscreen></iframe>
+            <button onclick='addToHome(this,"${title}","${url}","${channel}","${img}")' style='background:yellow;border-radius:20px;padding:6px 12px;'>Add to IndizHome</button>
+          </div>`;
+        }).join('');
+      });
+    }
 
-    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
-      method: "POST",
-      body: form
-    })
-    .then(r => r.json())
-    .then(uploadRes => {
-      const videoUrl = uploadRes.secure_url;
-      const video = { title, url: videoUrl, channel, img: imgData };
-      return fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+    function addToHome(btn, title, url, channel, img) {
+      btn.style.background = "purple";
+      let video = {title, url, channel, img};
+      fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
         method: "GET",
         headers: { 'X-Master-Key': jsonbinKey }
-      }).then(r=>r.json())
-        .then(json => {
-          let data = json.record || [];
-          data.unshift(video);
-          return fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-            method: "PUT",
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Master-Key': jsonbinKey
-            },
-            body: JSON.stringify(data)
-          });
+      })
+      .then(r=>r.json())
+      .then(json => {
+        let data = json.record || [];
+        data.unshift(video);
+        fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': jsonbinKey
+          },
+          body: JSON.stringify(data)
         });
-    }).then(() => {
-      addCard({title, url: videoUrl, channel, img: imgData});
-      coins += 2;
+        addCard(video);
+        coins += 3.5;
+        updateWallet();
+      });
+    }
+
+    function manualUpload(btn) {
+      btn.innerText = "Uploading...";
+      let file = document.getElementById("uploadFile").files[0];
+      let photo = document.getElementById("uploadPhoto").files[0];
+      let title = document.getElementById("uploadTitle").value;
+      let channel = document.getElementById("uploadChannel").value;
+
+      const form = new FormData();
+      form.append("file", file);
+      form.append("upload_preset", uploadPreset);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imgData = reader.result;
+
+        fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+          method: "POST",
+          body: form
+        })
+        .then(r => r.json())
+        .then(uploadRes => {
+          const videoUrl = uploadRes.secure_url;
+          const video = { title, url: videoUrl, channel, img: imgData };
+          return fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+            method: "GET",
+            headers: { 'X-Master-Key': jsonbinKey }
+          }).then(r=>r.json())
+            .then(json => {
+              let data = json.record || [];
+              data.unshift(video);
+              return fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                method: "PUT",
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Master-Key': jsonbinKey
+                },
+                body: JSON.stringify(data)
+              });
+            });
+        }).then(() => {
+          addCard({title, url: videoUrl, channel, img: imgData});
+          coins += 2;
+          updateWallet();
+          btn.innerText = "Uploaded to IndizHome";
+        });
+      };
+      reader.readAsDataURL(photo);
+    }
+
+    function loadVideos() {
+      fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+        headers: { 'X-Master-Key': jsonbinKey }
+      })
+      .then(r => r.json())
+      .then(json => {
+        (json.record || []).forEach(addCard);
+      });
+    }
+
+    setInterval(()=>{
+      coins += 0.35;
       updateWallet();
-      btn.innerText = "Uploaded to IndizHome";
-    });
-  };
-  reader.readAsDataURL(photo);
-}
+    }, 30000);
 
-function loadVideos() {
-  fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-    headers: { 'X-Master-Key': jsonbinKey }
-  })
-  .then(r => r.json())
-  .then(json => {
-    (json.record || []).forEach(addCard);
-  });
-}
-
-setInterval(()=>{
-  coins += 0.35;
-  updateWallet();
-}, 30000);
-
-window.onload = () => {
-  updateWallet();
-  loadVideos();
-};
-
+    window.onload = () => {
+      updateWallet();
+      loadVideos();
+    };
   </script>
 </body>
 </html>
